@@ -348,7 +348,8 @@ echo "$REPO_BRANCH-$CORE_BRANCH$RELEASE_MANIFEST" > .last_branch
 # envsetup.sh:mka = schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
 # Don't add -jXX. mka adds it automatically...
 if [ "$REPO_BRANCH" == "ics" ]; then
-  time mka bootimage bacon # recoveryzip recoveryimage checkapi
+  time mka bootimage
+  time mka bacon # recoveryzip recoveryimage checkapi
 else
   time mka bacon
 fi
