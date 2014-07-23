@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
+
 function check_result {
   if [ "0" -ne "$?" ]
   then
@@ -215,15 +217,15 @@ cat .repo/manifest.xml
 echo Syncing...
 # if sync fails:
 # clean repos (uncommitted changes are present), don't delete roomservice.xml, don't exit
-repo sync -d -c -f -j16
+repo sync -d -c -f -j$JOBS_NUM
 check_result "repo sync failed.", false, false
 
 # sync again, delete roomservice.xml if sync fails
-repo sync -d -c -f -j4
+repo sync -d -c -f -j1
 check_result "repo sync failed.", false, true
 
 # last sync, delete roomservice.xml and exit if sync fails
-repo sync -d -c -f -j4
+repo sync -d -c -f -j1
 check_result "repo sync failed.", true, true
 
 # SUCCESS
@@ -301,9 +303,9 @@ fi
 
 if [ $USE_CCACHE -eq 1 ]
 then
-  if [ ! "$(ccache -s|grep -E 'max cache size'|awk '{print $4}')" = "64.0" ]
+  if [ ! "$(ccache -s|grep -E 'max cache size'|awk '{print $4}')" = "20.0" ]
   then
-    ccache -M 64G
+    ccache -M 20G
   fi
   echo "============================================"
   ccache -s
@@ -345,7 +347,11 @@ echo "$REPO_BRANCH-$CORE_BRANCH$RELEASE_MANIFEST" > .last_branch
 
 # envsetup.sh:mka = schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
 # Don't add -jXX. mka adds it automatically...
-time mka bacon # recoveryzip recoveryimage checkapi
+if [ "$REPO_BRANCH" == "ics" ]; then
+  time mka bootimage bacon # recoveryzip recoveryimage checkapi
+else
+  time mka bacon
+fi
 check_result "Build failed."
 
 if [ $USE_CCACHE -eq 1 ]
