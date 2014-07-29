@@ -73,7 +73,7 @@ then
   fi
 
   # LDPI device (default)
-  LUNCH=cm_p500-userdebug
+  LUNCH=cm_jenad-userdebug
   if [ ! -z $vendor_name ] && [ ! -z $device_name ]
   then
     # Workaround for failing translation checks in common device repositories
@@ -428,6 +428,12 @@ rmdir $TEMPSTASH
 
 # chmod the files in case UMASK blocks permissions
 chmod -R ugo+r $WORKSPACE/archive
+
+# As I don't have so much free space, I save everything on my public Dropbox folder...
+# I just want a VPS :C
+echo "Copying stuff to Dropbox..."
+cp -rv $WORKSPACE/archive/ /etc/dropbox/Dropbox/Public/builds/$BUILD_NUMBER
+echo "Done!"
 
 CMCP=$(which cmcp)
 if [ ! -z "$CMCP" -a ! -z "$CM_RELEASE" ]
