@@ -432,7 +432,7 @@ chmod -R ugo+r $WORKSPACE/archive
 # As I don't have so much free space, I save everything on my public Dropbox folder...
 # I just want a VPS :C
 echo "Copying stuff to Dropbox..."
-cp -rv $WORKSPACE/archive/ /etc/dropbox/Dropbox/Public/builds/$BUILD_NUMBER
+cp -rv ${WORKSPACE}/archive/ /etc/dropbox/Dropbox/Public/builds/${BUILD_NUMBER}
 echo "Done!"
 
 CMCP=$(which cmcp)
