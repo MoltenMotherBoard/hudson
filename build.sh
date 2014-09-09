@@ -207,7 +207,7 @@ if [ "$REPO_BRANCH" == "ics" ]; then
 else
   export PATH="$PATH:/opt/local/bin/:$(pwd)/prebuilts/misc/$(uname|awk '{print tolower($0)}')-x86/ccache"
 fi
-   export CCACHE_DIR=~/ccache-jenkins/$JOB_NAME/$REPO_BRANCH
+   export CCACHE_DIR=$WORKSPACE/ccache/$JOB_NAME/$REPO_BRANCH
    mkdir -p $CCACHE_DIR
  fi
 
