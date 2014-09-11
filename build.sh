@@ -373,6 +373,9 @@ then
   echo "============================================"
 fi
 
+# Clean up always; we need space on my little server.
+make clobber
+
 # ClamAV virus scan
 if [ "$VIRUS_SCAN" = "true" ]
 then
