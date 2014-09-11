@@ -261,8 +261,12 @@ lunch $LUNCH
 check_result "lunch failed."
 
 # save manifest used for build (saving revisions as current HEAD)
-
-device/samsung/msm7x27a-common/patches/install-all.sh
+if [ -f device/samsung/msm7x27a-common/patches/install-all.sh ]
+then
+  device/samsung/msm7x27a-common/patches/install-all.sh
+else
+  echo "No patches to apply."
+fi 
 
 # include only the auto-generated locals
 TEMPSTASH=$(mktemp -d)
@@ -373,9 +377,6 @@ then
   echo "============================================"
 fi
 
-# Clean up always; we need space on my little server.
-make clobber
-
 # ClamAV virus scan
 if [ "$VIRUS_SCAN" = "true" ]
 then
@@ -412,6 +413,10 @@ if [ -f $OUT/recovery.img ]
 then
   cp $OUT/recovery.img $WORKSPACE/archive
 fi
+
+# Clean up always; we need space on my little server.
+echo "Cleaning up after the build..."
+make clobber
 
 # archive the build.prop as well
 ZIP=$(ls $WORKSPACE/archive/cm-*.zip)
