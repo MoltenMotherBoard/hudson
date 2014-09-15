@@ -437,6 +437,13 @@ rmdir $TEMPSTASH
 # chmod the files in case UMASK blocks permissions
 chmod -R ugo+r $WORKSPACE/archive
 
+# Pushing through FTP daemon
+# 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
+# cpftp $1 $2 $3 -> ncftpput -f $1 -b $2 $3
+# Then run ncftpbatch as jenkins, here or in a cronjob
+cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH $WORKSPACE/archive/cm-*.zip
+
+# Leave this here, maybe I'll use it sometimes
 CMCP=$(which cmcp)
 if [ ! -z "$CMCP" -a ! -z "$CM_RELEASE" ]
 then
