@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+repo init -u $SYNC_PROTO://android.googlesource.com/platform/manifest -b android-2.3.7_r1
+mkdir -p .repo/local_manifests
+curl https://raw.githubusercontent.com/MoltenMotherBoard/platform_local/aosp-gb/local_manifest.xml > .repo/local_manifests/mmb.xml

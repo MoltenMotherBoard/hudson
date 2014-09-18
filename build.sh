@@ -45,6 +45,7 @@ then
   exit 1
 fi
 
+# Don't bother me, we won't have a Gerrit for long time
 if [ ! -z "$GERRIT_PROJECT" ]
 then
   export RELEASE_TYPE=AUTOTEST
@@ -72,7 +73,7 @@ then
     export CHERRYPICK_REV=$GERRIT_PATCHSET_REVISION
   fi
 
-  # LDPI device (default)
+  # LDPI device (default) 
   LUNCH=cm_jenad-userdebug
   if [ ! -z $vendor_name ] && [ ! -z $device_name ]
   then
@@ -81,10 +82,17 @@ then
   fi
   export LUNCH=$LUNCH
 fi
+# Not changed part: end
 
-if [ -z "$LUNCH" ]
+if [ -z "$VENDOR" ]
 then
-  echo LUNCH not specified
+  echo VENDOR not specified
+  exit 1
+fi
+
+if [ -z "$DEVICE" ]
+then
+  echo DEVICE not specified
   exit 1
 fi
 
@@ -138,6 +146,15 @@ fi
 #AOKP compability
 export AOKP_BUILD=$RELEASE_TYPE
 
+#Detect if we're on AOSP or CM
+if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
+then
+    LUNCH=full_$DEVICE-userdebug
+else
+    LUNCH=cm_$DEVICE-userdebug
+    RELEASE_TYPE=CM_$RELEASE_TYPE
+fi
+
 REPO=$(which repo)
 if [ -z "$REPO" ]
 then
@@ -188,7 +205,7 @@ rm -fr vendor/zte/
 rm -rf .repo/manifests*
 rm -f .repo/local_manifests/dyn-*.xml
 rm -f .repo/local_manifest.xml
-repo init -u $SYNC_PROTO://github.com/android-legacy/android.git -b $CORE_BRANCH $MANIFEST
+$WORKSPACE/hudson/init/$REPO_BRANCH
 check_result "repo init failed."
 if [ ! -z "$CHERRYPICK_REV" ]
 then
@@ -202,12 +219,12 @@ fi
 if [ $USE_CCACHE -eq 1 ]
  then
    # make sure ccache is in PATH
-if [ "$REPO_BRANCH" == "ics" ]; then
+if [ -d prebuilt ]; then
   export PATH="$PATH:/opt/local/bin/:$(pwd)/prebuilt/$(uname|awk '{print tolower($0)}')-x86/ccache"
 else
   export PATH="$PATH:/opt/local/bin/:$(pwd)/prebuilts/misc/$(uname|awk '{print tolower($0)}')-x86/ccache"
 fi
-   export CCACHE_DIR=$WORKSPACE/ccache/$JOB_NAME/$REPO_BRANCH
+   export CCACHE_DIR=$WORKSPACE/ccache/$DEVICE
    mkdir -p $CCACHE_DIR
  fi
 
@@ -261,9 +278,9 @@ lunch $LUNCH
 check_result "lunch failed."
 
 # save manifest used for build (saving revisions as current HEAD)
-if [ -f device/samsung/msm7x27a-common/patches/install-all.sh ]
+if [ -f device/$VENDOR/$DEVICE/patches/install.sh ]
 then
-  device/samsung/msm7x27a-common/patches/install-all.sh
+  device/$VENDOR/$DEVICE/patches/install.sh
 else
   echo "No patches to apply."
 fi 
@@ -281,6 +298,7 @@ mv $TEMPSTASH/* .repo/local_manifests/ 2>/dev/null
 rmdir $TEMPSTASH
 
 rm -f $OUT/cm-*.zip*
+rm -f $OUT/mmb-*.zip*
 
 UNAME=$(uname)
 
@@ -401,10 +419,18 @@ then
 fi
 
 # /archive
+if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
+then
+for f in $(ls $OUT/mmb-*.zip*)
+do
+  ln $f $WORKSPACE/archive/$(basename $f)
+done
+else
 for f in $(ls $OUT/cm-*.zip*)
 do
   ln $f $WORKSPACE/archive/$(basename $f)
 done
+fi
 if [ -f $OUT/utilties/update.zip ]
 then
   cp $OUT/utilties/update.zip $WORKSPACE/archive/recovery.zip
@@ -419,11 +445,17 @@ echo "Cleaning up after the build..."
 make clobber
 
 # archive the build.prop as well
-ZIP=$(ls $WORKSPACE/archive/cm-*.zip)
+if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
+then
+    ZIP=$(ls $WORKSPACE/archive/mmb-*.zip)
+else
+    ZIP=$(ls $WORKSPACE/archive/cm-*.zip)
+fi
 unzip -p $ZIP system/build.prop > $WORKSPACE/archive/build.prop
 
 # CORE: save manifest used for build (saving revisions as current HEAD)
 rm -f .repo/local_manifests/roomservice.xml
+rm -f .repo/local_manifests/mmb.xml
 
 # Stash away other possible manifests
 TEMPSTASH=$(mktemp -d)
@@ -441,7 +473,12 @@ chmod -R ugo+r $WORKSPACE/archive
 # 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
 # cpftp $1 $2 $3 -> ncftpput -f $1 -b $2 $3
 # Then run ncftpbatch as jenkins, here or in a cronjob
-cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/cm-*.zip
+if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
+then
+    cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/mmb-*.zip
+else
+    cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/cm-*.zip
+fi
 
 # Leave this here, maybe I'll use it sometimes
 CMCP=$(which cmcp)

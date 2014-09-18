@@ -6,7 +6,7 @@ fi
 
 if [ ! -d hudson ]
 then
-  git clone https://github.com/ItachiSan/hudson.git -b cm
+  git clone https://github.com/MoltenMotherBoard/hudson.git -b master
 fi
 
 cd hudson
