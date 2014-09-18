@@ -205,6 +205,7 @@ rm -fr vendor/zte/
 rm -rf .repo/manifests*
 rm -f .repo/local_manifests/dyn-*.xml
 rm -f .repo/local_manifest.xml
+chmod +x $WORKSPACE/hudson/init/*
 $WORKSPACE/hudson/init/$REPO_BRANCH
 check_result "repo init failed."
 if [ ! -z "$CHERRYPICK_REV" ]
