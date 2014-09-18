@@ -150,6 +150,9 @@ export AOKP_BUILD=$RELEASE_TYPE
 if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
 then
     LUNCH=full_$DEVICE-userdebug
+    if [ "$REPO_BRANCH" == "aosp-gb" ]; then
+        LUNCH=$DEVICE-userdebug
+    fi
 else
     LUNCH=cm_$DEVICE-userdebug
     RELEASE_TYPE=CM_$RELEASE_TYPE
