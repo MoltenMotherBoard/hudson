@@ -277,10 +277,6 @@ then
   CLEAN="true"
 fi
 
-. build/envsetup.sh
-lunch $LUNCH
-check_result "lunch failed."
-
 # save manifest used for build (saving revisions as current HEAD)
 if [ -f device/$VENDOR/$DEVICE/patches/install.sh ]
 then
@@ -288,6 +284,10 @@ then
 else
   echo "No patches to apply."
 fi 
+
+. build/envsetup.sh
+lunch $LUNCH
+check_result "lunch failed."
 
 # include only the auto-generated locals
 TEMPSTASH=$(mktemp -d)
