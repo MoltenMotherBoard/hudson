@@ -156,7 +156,7 @@ then
 else
     LUNCH=cm_$DEVICE-userdebug
         if [ "$REPO_BRANCH" == "cm7" ]; then
-        LUNCH=cyanogen_$DEVICE-userdebug
+        LUNCH=cyanogen_$DEVICE-eng
     fi
     RELEASE_TYPE=CM_$RELEASE_TYPE
 fi
