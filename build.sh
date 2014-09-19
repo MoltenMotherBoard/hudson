@@ -477,11 +477,14 @@ chmod -R ugo+r $WORKSPACE/archive
 # 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
 # cpftp $1 $2 $3 -> ncftpput -f $1 -b $2 $3
 # Then run ncftpbatch as jenkins, here or in a cronjob
-if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
+if [ "$VIRUS_SCAN" = "true" ]
 then
+  if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
+  then
     cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/mmb-*.zip
-else
+  else
     cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/cm-*.zip
+  fi
 fi
 
 # Leave this here, maybe I'll use it sometimes
