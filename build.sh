@@ -280,6 +280,7 @@ fi
 # save manifest used for build (saving revisions as current HEAD)
 if [ -f device/$VENDOR/$DEVICE/patches/install.sh ]
 then
+  chmod +x device/$VENDOR/$DEVICE/patches/install.sh
   device/$VENDOR/$DEVICE/patches/install.sh
 else
   echo "No patches to apply."
