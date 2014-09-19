@@ -110,7 +110,7 @@ fi
 
 if [ -z "$SYNC_PROTO" ]
 then
-  SYNC_PROTO=git
+  SYNC_PROTO=https
 fi
 
 # colorization fix in Jenkins
@@ -171,8 +171,8 @@ then
   export BUILD_USER_ID=$(whoami)
 fi
 
-git config --global user.name $BUILD_USER_ID@android-legacy
-git config --global user.email review@android-legacy.com
+git config --global user.name $BUILD_USER_ID@moltenmotherboard
+git config --global user.email moltenmotherboard@gmail.com
 
 JENKINS_BUILD_DIR=$REPO_BRANCH
 
