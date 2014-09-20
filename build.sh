@@ -482,7 +482,7 @@ chmod -R ugo+r $WORKSPACE/archive
 # 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
 # cpftp $1 $2 $3 -> ncftpput -f $1 -b $2 $3
 # Then run ncftpbatch as jenkins, here or in a cronjob
-if [ "$VIRUS_SCAN" = "true" ]
+if [ "$EXPORT" = "true" ]
 then
   if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
   then
