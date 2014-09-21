@@ -155,10 +155,11 @@ then
     fi
 else
     LUNCH=cm_$DEVICE-userdebug
-        if [ "$REPO_BRANCH" == "cm7" ]; then
-        LUNCH=cyanogen_$DEVICE-eng
-    fi
     RELEASE_TYPE=CM_$RELEASE_TYPE
+      if [ "$REPO_BRANCH" == "cm7" ]; then
+        LUNCH=cyanogen_$DEVICE-eng
+        RELEASE_TYPE=CYANOGEN_$RELEASE_TYPE
+      fi
 fi
 
 REPO=$(which repo)
