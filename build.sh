@@ -312,9 +312,34 @@ rm -f $OUT/mmb-*.zip*
 
 UNAME=$(uname)
 
+# CM > 7 build tags
+if [ "$RELEASE_TYPE" = "CM_NIGHTLY" ]
+then
+  export CM_NIGHTLY=true
+elif [ "$RELEASE_TYPE" = "CM_EXPERIMENTAL" ]
+then
+  export CM_EXPERIMENTAL=true
+elif [ "$RELEASE_TYPE" = "CM_RELEASE" ]
+then
+  export CM_RELEASE=true
+fi
+
+# CM7 build tags
+if [ "$RELEASE_TYPE" = "CYANOGEN_NIGHTLY" ]
+then
+  export CYANOGEN_NIGHTLY=true
+elif [ "$RELEASE_TYPE" = "CYANOGEN_EXPERIMENTAL" ]
+then
+  export CYANOGEN_EXPERIMENTAL=true
+elif [ "$RELEASE_TYPE" = "CYANOGEN_RELEASE" ]
+then
+  export CYANOGEN_RELEASE=true
+fi
+
 if [ ! -z "$CM_EXTRAVERSION" ]
 then
   export CM_EXPERIMENTAL=true
+  export CYANOGEN_EXPERIMENTAL=true
 fi
 
 
