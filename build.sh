@@ -84,12 +84,6 @@ then
 fi
 # Not changed part: end
 
-if [ -z "$VENDOR" ]
-then
-  echo VENDOR not specified
-  exit 1
-fi
-
 if [ -z "$DEVICE" ]
 then
   echo DEVICE not specified
@@ -121,10 +115,12 @@ export CL_BLU="\"\033[34m\""
 export CL_MAG="\"\033[35m\""
 export CL_CYN="\"\033[36m\""
 export CL_RST="\"\033[0m\""
-# ICS has different 'declare's for colors
+# ICS/GB color declarations
 export CL_PFX="\"\033[33m\""
 export CL_INS="\"\033[36m\""
-
+if [ "$REPO_BRANCH" == "aosp-gb" ]; then
+    export CL_INS="\"\033[32m\""
+fi
 
 cd $WORKSPACE
 rm -rf archive
@@ -155,11 +151,9 @@ then
     fi
 else
     LUNCH=cm_$DEVICE-userdebug
-    RELEASE_TYPE=CM_$RELEASE_TYPE
-      if [ "$REPO_BRANCH" == "cm7" ]; then
+    if [ "$REPO_BRANCH" == "cm7" ]; then
         LUNCH=cyanogen_$DEVICE-eng
-        RELEASE_TYPE=CYANOGEN_$RELEASE_TYPE
-      fi
+    fi
 fi
 
 REPO=$(which repo)
@@ -265,6 +259,8 @@ check_result "repo sync failed.", true, true
 # SUCCESS
 echo Sync complete.
 
+# General setup
+
 $WORKSPACE/hudson/cm-setup.sh
 
 if [ -f .last_branch ]
@@ -281,19 +277,22 @@ then
   CLEAN="true"
 fi
 
-# save manifest used for build (saving revisions as current HEAD)
-if [ -f device/$VENDOR/$DEVICE/patches/install.sh ]
+# Install patches and verify if we can actually build with lunch
+DEVICE_TREE=$(find device/ -name $DEVICE)
+if [ -d $DEVICE_TREE/patches ]
 then
-  chmod +x device/$VENDOR/$DEVICE/patches/install.sh
-  device/$VENDOR/$DEVICE/patches/install.sh
+  chmod +x $DEVICE_TREE/patches/*.sh
+  $DEVICE_TREE/patches/*.sh
 else
   echo "No patches to apply."
-fi 
+fi
+unset DEVICE_TREE
 
 . build/envsetup.sh
 lunch $LUNCH
 check_result "lunch failed."
 
+# save manifest used for build (saving revisions as current HEAD)
 # include only the auto-generated locals
 TEMPSTASH=$(mktemp -d)
 mv .repo/local_manifests/* $TEMPSTASH
@@ -312,34 +311,26 @@ rm -f $OUT/mmb-*.zip*
 
 UNAME=$(uname)
 
-# CM > 7 build tags
-if [ "$RELEASE_TYPE" = "CM_NIGHTLY" ]
+# CM build tags, to have correct build names
+if [ "$RELEASE_TYPE" = "NIGHTLY" ]
 then
-  export CM_NIGHTLY=true
-elif [ "$RELEASE_TYPE" = "CM_EXPERIMENTAL" ]
+    export CM_NIGHTLY=true
+    export CYANOGEN_NIGHTLY=true
+elif [ "$RELEASE_TYPE" = "EXPERIMENTAL" ]
 then
-  export CM_EXPERIMENTAL=true
-elif [ "$RELEASE_TYPE" = "CM_RELEASE" ]
+    export CM_EXPERIMENTAL=true
+    export CYANOGEN_EXPERIMENTAL=true
+elif [ "$RELEASE_TYPE" = "RELEASE" ]
 then
-  export CM_RELEASE=true
-fi
-
-# CM7 build tags
-if [ "$RELEASE_TYPE" = "CYANOGEN_NIGHTLY" ]
-then
-  export CYANOGEN_NIGHTLY=true
-elif [ "$RELEASE_TYPE" = "CYANOGEN_EXPERIMENTAL" ]
-then
-  export CYANOGEN_EXPERIMENTAL=true
-elif [ "$RELEASE_TYPE" = "CYANOGEN_RELEASE" ]
-then
-  export CYANOGEN_RELEASE=true
+    export CM_RELEASE=true
+    export CYANOGEN_RELEASE=true
 fi
 
 if [ ! -z "$CM_EXTRAVERSION" ]
 then
-  export CM_EXPERIMENTAL=true
-  export CYANOGEN_EXPERIMENTAL=true
+    export CM_EXPERIMENTAL=true
+    export CYANOGEN_EXPERIMENTAL=true
+    export CYANOGEN_EXTRAVERSION=$CM_EXTRAVERSION
 fi
 
 
@@ -369,9 +360,9 @@ fi
 
 if [ $USE_CCACHE -eq 1 ]
 then
-  if [ ! "$(ccache -s|grep -E 'max cache size'|awk '{print $4}')" = "20.0" ]
+  if [ ! "$(ccache -s|grep -E 'max cache size'|awk '{print $4}')" = "10.0" ]
   then
-    ccache -M 20G
+    ccache -M 10G
   fi
   echo "============================================"
   ccache -s
