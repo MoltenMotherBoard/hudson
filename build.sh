@@ -503,9 +503,9 @@ if [ "$EXPORT" = "true" ]
 then
   if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
   then
-    cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/mmb-*.zip
+    cpftp /opt/android/afh.cfg jenkins/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/mmb-*.zip*
   else
-    cpftp /opt/android/afh.cfg jenkins/android-legacy/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/cm-*.zip
+    cpftp /opt/android/afh.cfg jenkins/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/cm-*.zip*
   fi
 fi
 
