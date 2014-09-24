@@ -123,8 +123,8 @@ if [ "$REPO_BRANCH" == "aosp-gb" ]; then
 fi
 
 cd $WORKSPACE
-rm -rf archive
-mkdir -p archive
+rm -rf archive/$REPO_BRANCH
+mkdir -p archive/$REPO_BRANCH
 export BUILD_NO=$BUILD_NUMBER
 unset BUILD_NUMBER
 
@@ -300,7 +300,7 @@ mv .repo/local_manifests/* $TEMPSTASH
 mv $TEMPSTASH/mmb.xml .repo/local_manifests/
 
 # save it
-repo manifest -o $WORKSPACE/archive/manifest.xml -r
+repo manifest -o $WORKSPACE/archive/$REPO_BRANCH/manifest.xml -r
 
 # restore all local manifests
 mv $TEMPSTASH/* .repo/local_manifests/ 2>/dev/null
@@ -426,7 +426,7 @@ if [ "$VIRUS_SCAN" = "true" ]
 then
   CLAMAV_SIGNATURE=`clamdscan --version`
   echo "Scanning for viruses with $CLAMAV_SIGNATURE..."
-  clamdscan --infected --multiscan --fdpass $OUT > $WORKSPACE/archive/virusreport.txt
+  clamdscan --infected --multiscan --fdpass $OUT > $WORKSPACE/archive/$REPO_BRANCH/virusreport.txt
   SCAN_RESULT=$?
   if [ $SCAN_RESULT -eq 0 ]
   then
@@ -449,21 +449,21 @@ if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
 then
 for f in $(ls $OUT/mmb-*.zip*)
 do
-  ln $f $WORKSPACE/archive/$(basename $f)
+  ln $f $WORKSPACE/archive/$REPO_BRANCH/$(basename $f)
 done
 else
 for f in $(ls $OUT/cm-*.zip*)
 do
-  ln $f $WORKSPACE/archive/$(basename $f)
+  ln $f $WORKSPACE/archive/$REPO_BRANCH/$(basename $f)
 done
 fi
 if [ -f $OUT/utilties/update.zip ]
 then
-  cp $OUT/utilties/update.zip $WORKSPACE/archive/recovery.zip
+  cp $OUT/utilties/update.zip $WORKSPACE/archive/$REPO_BRANCH/recovery.zip
 fi
 if [ -f $OUT/recovery.img ]
 then
-  cp $OUT/recovery.img $WORKSPACE/archive
+  cp $OUT/recovery.img $WORKSPACE/archive/$REPO_BRANCH
 fi
 
 # Clean up always; we need space on my little server.
@@ -473,11 +473,11 @@ make clobber
 # archive the build.prop as well
 if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
 then
-    ZIP=$(ls $WORKSPACE/archive/mmb-*.zip)
+    ZIP=$(ls $WORKSPACE/archive/$REPO_BRANCH/mmb-*.zip)
 else
-    ZIP=$(ls $WORKSPACE/archive/cm-*.zip)
+    ZIP=$(ls $WORKSPACE/archive/$REPO_BRANCH/cm-*.zip)
 fi
-unzip -p $ZIP system/build.prop > $WORKSPACE/archive/build.prop
+unzip -p $ZIP system/build.prop > $WORKSPACE/archive/$REPO_BRANCH/build.prop
 
 # CORE: save manifest used for build (saving revisions as current HEAD)
 rm -f .repo/local_manifests/roomservice.xml
@@ -487,13 +487,13 @@ rm -f .repo/local_manifests/mmb.xml
 TEMPSTASH=$(mktemp -d)
 mv .repo/local_manifests $TEMPSTASH
 
-repo manifest -o $WORKSPACE/archive/core.xml -r
+repo manifest -o $WORKSPACE/archive/$REPO_BRANCH/core.xml -r
 
 mv $TEMPSTASH/local_manifests .repo
 rmdir $TEMPSTASH
 
 # chmod the files in case UMASK blocks permissions
-chmod -R ugo+r $WORKSPACE/archive
+chmod -R ugo+r $WORKSPACE/archive/$REPO_BRANCH
 
 # Pushing through FTP daemon
 # 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
@@ -503,9 +503,9 @@ if [ "$EXPORT" = "true" ]
 then
   if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
   then
-    cpftp /opt/android/afh.cfg jenkins/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/mmb-*.zip*
+    cpftp /opt/android/afh.cfg jenkins/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/$REPO_BRANCH/mmb-*.zip*
   else
-    cpftp /opt/android/afh.cfg jenkins/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/cm-*.zip*
+    cpftp /opt/android/afh.cfg jenkins/$REPO_BRANCH/$BUILD_NO $WORKSPACE/archive/$REPO_BRANCH/cm-*.zip*
   fi
 fi
 
