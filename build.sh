@@ -278,12 +278,15 @@ then
 fi
 
 # Install patches and verify if we can actually build with lunch
-sleep 20
+echo "Applying patches"
 DEVICE_TREE=$(find device/ -name $DEVICE)
+echo "Device: " $DEVICE
 if [ -d $DEVICE_TREE/patches ]
 then
-  chmod +x $DEVICE_TREE/patches/*.sh
-  $DEVICE_TREE/patches/*.sh
+  echo "Patches folder found"
+  chmod +x $DEVICE_TREE/patches/fetch.sh $DEVICE_TREE/patches/install.sh
+  $DEVICE_TREE/patches/fetch.sh
+  $DEVICE_TREE/patches/install.sh
 else
   echo "No patches to apply."
 fi
