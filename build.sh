@@ -278,6 +278,7 @@ then
 fi
 
 # Install patches and verify if we can actually build with lunch
+sleep 20
 DEVICE_TREE=$(find device/ -name $DEVICE)
 if [ -d $DEVICE_TREE/patches ]
 then
