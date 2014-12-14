@@ -260,9 +260,6 @@ check_result "repo sync failed.", true, true
 echo Sync complete.
 
 # General setup
-
-$WORKSPACE/hudson/cm-setup.sh
-
 if [ -f .last_branch ]
 then
   LAST_BRANCH=$(cat .last_branch)
@@ -291,6 +288,9 @@ else
   echo "No patches to apply."
 fi
 unset DEVICE_TREE
+
+# Get CM specific stuff
+$WORKSPACE/hudson/cm-setup.sh
 
 . build/envsetup.sh
 lunch $LUNCH
