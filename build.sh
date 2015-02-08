@@ -497,7 +497,7 @@ mv $TEMPSTASH/local_manifests .repo
 rmdir $TEMPSTASH
 
 # chmod the files in case UMASK blocks permissions
-chmod -R ugo+r $WORKSPACE/archive/$REPO_BRANCH
+chmod -R ugo+rx $WORKSPACE/archive/$REPO_BRANCH
 
 # Pushing through FTP daemon
 # 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
