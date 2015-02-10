@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-repo init -u $SYNC_PROTO://github.com/CyanogenMod/android -b gingerbread
+repo init -u $SYNC_PROTO://github.com/CyanogenMod/android.git -b gingerbread
 mkdir -p .repo/local_manifests
 curl https://raw.githubusercontent.com/MoltenMotherBoard/platform_local/cm7/local_manifest.xml > .repo/local_manifests/mmb.xml
