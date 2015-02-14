@@ -131,13 +131,13 @@ unset BUILD_NUMBER
 export PATH=~/bin:$PATH
 export BUILD_WITH_COLORS=0
 
-if [[ "$RELEASE_TYPE" == "RELEASE" ]]
-then
-  export USE_CCACHE=0
-else
+#if [[ "$RELEASE_TYPE" == "RELEASE" ]]
+#then
+#  export USE_CCACHE=0
+#else
   export USE_CCACHE=1
   export CCACHE_NLEVELS=4
-fi
+#fi
 
 #AOKP compability
 export AOKP_BUILD=$RELEASE_TYPE
