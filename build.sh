@@ -13,6 +13,7 @@ function check_result {
     if [ "$rm_roomservice" = "true" ]
     then
       rm -f .repo/local_manifests/roomservice.xml
+      rm -f .repo/local_manifests/mmb.xml
     fi
     echo $err_message
     if [ "$exit_die" = "true" ]
