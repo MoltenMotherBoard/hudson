@@ -169,8 +169,21 @@ then
   export BUILD_USER_ID=$(whoami)
 fi
 
+# Using user real name if avaible
+if [ -z $BUILD_USER_FIRST_NAME -o -z $BUILD_USER_LAST_NAME ]
+then
 git config --global user.name $BUILD_USER_ID@moltenmotherboard
+else
+git config --global user.name "$BUILD_USER_FIRST_NAME $BUILD_USER_LAST_NAME"
+fi
+
+# Using user real email if avaible
+if [ ! -z $BUILD_USER_EMAIL ]
+then
+git config --global user.name $BUILD_USER_EMAIL
+else
 git config --global user.email moltenmotherboard@gmail.com
+fi
 
 JENKINS_BUILD_DIR=$REPO_BRANCH
 
