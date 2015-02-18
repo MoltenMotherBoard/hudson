@@ -378,13 +378,14 @@ fi
 
 if [ $USE_CCACHE -eq 1 ]
 then
-  if [ ! "$(ccache -s|grep -E 'max cache size'|awk '{print $4}')" = "10.0" ]
+  if [ ! "$(ccache -s|grep -E 'max cache size'|awk '{print $4}')" = "20.0" ]
   then
     ccache -M 20G
   fi
   echo "============================================"
   ccache -s
   echo "============================================"
+  ccache -c
 fi
 
 
