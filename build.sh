@@ -518,7 +518,7 @@ chmod -R ugo+rx $WORKSPACE/archive/$REPO_BRANCH
 # 1st is config file, than remote dir and then to-upload files (wrapper for ncftpput/ncftpbatch)
 # cpftp $1 $2 $3 -> ncftpput -f $1 -b $2 $3
 # Then run ncftpbatch as jenkins, here or in a cronjob
-if [ "$EXPORT" = "true" ]
+if [ "$FTP_BG_EXPORT" = "true" ]
 then
   if [ ! -z $(echo $REPO_BRANCH | grep aosp) ]
   then
