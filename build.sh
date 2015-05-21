@@ -295,7 +295,7 @@ echo "Device: " $DEVICE
 if [ -d $DEVICE_TREE/patches ]
 then
   echo "Patches folder found"
-  chmod +x $DEVICE_TREE/patches/fetch.sh $DEVICE_TREE/patches/install.sh
+  #chmod +x $DEVICE_TREE/patches/fetch.sh $DEVICE_TREE/patches/install.sh
   $DEVICE_TREE/patches/fetch.sh
   $DEVICE_TREE/patches/install.sh
 else
